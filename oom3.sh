@@ -76,7 +76,7 @@ echo "oom3: Initial batches of 2MB blocks: $initial_batches"
 echo "oom3: Stopping at batch $total_batches"
 date
 
-~/Documents/proj/c/oom3 "$initial_batches" "$total_batches" &
+./oom3 "$initial_batches" "$total_batches" &
 
 # timeout after 8 seconds
 for ((i=0;i<=160;i++)); do
