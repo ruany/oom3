@@ -1,0 +1,48 @@
+--- a/mm/vmscan.c	2021-06-20 15:28:21.719999500 +0200
++++ b/mm/vmscan.c	2021-06-20 15:24:57.061863089 +0200
+@@ -169,6 +166,8 @@
+  */
+ int vm_swappiness = 33;
+ 
++int vm_always_reclaim_anon = 0;
++
+ static void set_task_reclaim_state(struct task_struct *task,
+ 				   struct reclaim_state *rs)
+ {
+@@ -2276,20 +2275,11 @@
+ 	/*
+ 	 * If the system is almost out of file pages, force-scan anon.
+ 	 */
+-	if (sc->file_is_tiny) {
++	if (sc->file_is_tiny || vm_always_reclaim_anon == 1) {
+ 		scan_balance = SCAN_ANON;
+ 		goto out;
+ 	}
+--- a/include/linux/swap.h	2021-06-20 16:01:55.369356697 +0200
++++ b/include/linux/swap.h	2021-06-20 16:03:35.532781487 +0200
+@@ -367,6 +367,7 @@
+ 						unsigned long *nr_scanned);
+ extern unsigned long shrink_all_memory(unsigned long nr_pages);
+ extern int vm_swappiness;
++extern int vm_always_reclaim_anon;
+ extern int remove_mapping(struct address_space *mapping, struct page *page);
+ 
+ extern unsigned long reclaim_pages(struct list_head *page_list);
+--- a/kernel/sysctl.c	2021-06-20 15:27:29.805562314 +0200
++++ b/kernel/sysctl.c	2021-06-20 15:26:23.667220788 +0200
+@@ -2886,6 +2886,15 @@
+ 		.extra1		= SYSCTL_ZERO,
+ 		.extra2		= &two_hundred,
+ 	},
++	{
++		.procname	= "always_reclaim_anon",
++		.data		= &vm_always_reclaim_anon,
++		.maxlen		= sizeof(vm_always_reclaim_anon),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec_minmax,
++		.extra1		= SYSCTL_ZERO,
++		.extra2		= SYSCTL_ONE,
++	},
+ #ifdef CONFIG_HUGETLB_PAGE
+ 	{
+ 		.procname	= "nr_hugepages",
