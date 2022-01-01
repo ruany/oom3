@@ -1,6 +1,6 @@
 --- a/mm/vmscan.c	2021-06-20 15:28:21.719999500 +0200
 +++ b/mm/vmscan.c	2021-06-20 15:24:57.061863089 +0200
-@@ -169,6 +166,8 @@
+@@ -169,6 +169,8 @@
   */
  int vm_swappiness = 33;
  
@@ -9,7 +9,7 @@
  static void set_task_reclaim_state(struct task_struct *task,
  				   struct reclaim_state *rs)
  {
-@@ -2276,20 +2275,11 @@
+@@ -2276,7 +2278,7 @@
  	/*
  	 * If the system is almost out of file pages, force-scan anon.
  	 */
@@ -43,6 +43,3 @@
 +		.extra1		= SYSCTL_ZERO,
 +		.extra2		= SYSCTL_ONE,
 +	},
- #ifdef CONFIG_HUGETLB_PAGE
- 	{
- 		.procname	= "nr_hugepages",
