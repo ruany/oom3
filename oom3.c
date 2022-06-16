@@ -11,9 +11,9 @@
 #define likely(x)       __builtin_expect(!!(x), 1)
 #define unlikely(x)     __builtin_expect(!!(x), 0)
 
-const unsigned int size = (1024*1024*2); // 2MB (THP aligned)
-const unsigned int batch = 25; // Amount of allocations to print and delay between
-const unsigned int delay_factor = 50; // Additional delay * ((completed batches - initial batches)/batch size) in ms. Increase if too much memory gets swapped out. Decrease if not quick enough.
+const unsigned int size = 2<<20; // 2MB (THP aligned)
+const unsigned int batch = 2; // Amount of allocations to print and delay between. Use a power of two for modulo optimization.
+const unsigned int delay_factor = 2<<10; // Additional delay * ((completed batches - initial batches)/batch size). Increase if too much memory gets swapped out. Decrease if not quick enough. Delay is measured in microseconds * 1024 (almost-milliseconds)
 
 /**
 * This marks our process as the highest possible candidate for the OOM killer
@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
         if ((i%batch) == 0) {
             if (i >= init_batches) {
                 printf("Page %d allocated and zeroed\n", i);
-                unsigned int delay = (unsigned int)(1000*(delay_factor*((i-init_batches)/batch)));
+                unsigned int delay = (unsigned int)((delay_factor*((i-init_batches)/batch))<<10);
                 usleep(delay);
             }
         }
