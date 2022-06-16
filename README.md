@@ -9,7 +9,7 @@ oom3 allocates all free memory on your system while leaving page cache intact, a
 * You can measure performance & compression ratio of zram (lz4 vs zstd compression) without dropping all of your page cache each time you want to test.
 
 ## Building
-1. Apply the kernel patch (`0001-swap.mypatch`). After you've patched the kernel, verify that the tunable `/proc/sys/vm/always_reclaim_anon` exists.
+1. Apply the kernel patch for your kernel version (`0001-force-anon-reclaim-*.mypatch`). After you've patched the kernel, verify that the tunable `/proc/sys/vm/always_reclaim_anon` exists.
 2. Compile oom3 using `make`.
 
 ## Usage
