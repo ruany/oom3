@@ -1,6 +1,6 @@
---- a/kernel/sysctl.c	2022-06-16 06:04:51.714560726 +0200
-+++ b/kernel/sysctl.c	2022-06-16 06:11:18.377751540 +0200
-@@ -2528,6 +2528,15 @@
+--- a/kernel/sysctl.c	2022-08-01 07:58:09.117021672 +0200
++++ b/kernel/sysctl.c	2022-08-01 07:57:59.273934000 +0200
+@@ -2512,6 +2512,15 @@
  		.extra1		= SYSCTL_ZERO,
  		.extra2		= SYSCTL_TWO_HUNDRED,
  	},
@@ -13,9 +13,9 @@
 +		.extra1		= SYSCTL_ZERO,
 +		.extra2		= SYSCTL_ONE,
 +	},
- #ifdef CONFIG_HUGETLB_PAGE
+ #ifdef CONFIG_NUMA
  	{
- 		.procname	= "nr_hugepages",
+ 		.procname	= "numa_stat",
 --- a/include/linux/swap.h	2022-05-22 21:52:31.000000000 +0200
 +++ b/include/linux/swap.h	2022-06-16 06:10:37.703211392 +0200
 @@ -396,6 +396,7 @@
