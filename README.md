@@ -5,7 +5,7 @@ With this, you can set up a system-wide swap quota on anonymous pages which is e
 
 ## Why?
 * This allows you to swap ahead-of-time, reclaiming memory before it's needed by memory-intensive applications.
-* Freed up memory can be immediately used for page cache.
+* Freed up memory can be immediately used for page cache or ZFS ARC (which, in turn, stores compressed pages).
 * Many programs don't use 100% of the memory that they have allocated, and swapping these unused pages gives you free memory to work with, at little cost.
 * This can be used with zram writeback (backing_dev) to prepare a specific amount of pages to be compressed, marked as idle, and written back to a real swap device over any time period. This gives you fine control over how many pages actually become idle over time as you swap them out manually.
 * You can set a very low `vm.swappiness` value (or even set it to zero) while still having precisely as much swapped out memory as you want to have.
