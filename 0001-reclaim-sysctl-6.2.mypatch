@@ -1,0 +1,51 @@
+--- a/kernel/sysctl.c	2022-08-01 07:58:09.117021672 +0200
++++ b/kernel/sysctl.c	2022-08-01 07:57:59.273934000 +0200
+@@ -2512,6 +2512,15 @@
+ 		.extra1		= SYSCTL_ZERO,
+ 		.extra2		= SYSCTL_TWO_HUNDRED,
+ 	},
++	{
++		.procname	= "always_reclaim_anon",
++		.data		= &vm_always_reclaim_anon,
++		.maxlen		= sizeof(vm_always_reclaim_anon),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec_minmax,
++		.extra1		= SYSCTL_ZERO,
++		.extra2		= SYSCTL_ONE,
++	},
+ #ifdef CONFIG_NUMA
+ 	{
+ 		.procname	= "numa_stat",
+--- a/include/linux/swap.h	2022-05-22 21:52:31.000000000 +0200
++++ b/include/linux/swap.h	2022-06-16 06:10:37.703211392 +0200
+@@ -396,6 +396,7 @@
+ 						unsigned long *nr_scanned);
+ extern unsigned long shrink_all_memory(unsigned long nr_pages);
+ extern int vm_swappiness;
++extern int vm_always_reclaim_anon;
+ long remove_mapping(struct address_space *mapping, struct folio *folio);
+ 
+ extern unsigned long reclaim_pages(struct list_head *page_list);
+--- a/mm/vmscan.c	2023-01-02 00:09:30.546070223 +0200
++++ b/mm/vmscan.c	2023-01-02 00:08:51.220566736 +0200
+@@ -191,6 +191,8 @@
+  */
+ int vm_swappiness = 20;
+ 
++int vm_always_reclaim_anon = 0;
++
+ static void set_task_reclaim_state(struct task_struct *task,
+ 				   struct reclaim_state *rs)
+ {
+@@ -2908,6 +2910,11 @@
+ 	unsigned long ap, fp;
+ 	enum lru_list lru;
+ 
++	if (vm_always_reclaim_anon == 1) {
++		scan_balance = SCAN_ANON;
++		goto out;
++	}
++
+ 	/* If we have no swap space, do not bother scanning anon folios. */
+ 	if (!sc->may_swap || !can_reclaim_anon_pages(memcg, pgdat->node_id, sc)) {
+ 		scan_balance = SCAN_FILE;
